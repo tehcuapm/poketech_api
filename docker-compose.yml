@@ -1,0 +1,39 @@
+version: '3.9'
+services:
+  app:
+    container_name: pg_rest_api
+    build: .
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSGRES_DB=${POSGRES_DB}
+      - DATABASE_PORT=${DATABASE_PORT}
+    ports:
+      - 8080:8080
+    restart: always
+    depends_on:
+      - pg_db
+    networks: 
+      - go_rest_api
+
+  pg_db:
+    image: postgres:alpine
+    container_name: pg_db
+    restart: always
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - DATABASE_PORT=${DATABASE_PORT}
+    ports:
+      - "${DATABASE_PORT}:${DATABASE_PORT}"
+    volumes:
+      - pgsql:/var/lib/postgresql/data
+    networks:
+      - go_rest_api
+
+networks:
+  go_rest_api:
+
+volumes:
+  pgsql:
+    driver: local
